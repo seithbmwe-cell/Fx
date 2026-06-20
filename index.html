@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>EA Trading Dojo</title>
+<meta name="theme-color" content="#0a0a0f" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" href="./icon-192.png" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --void:#0a0a0f;
+    --ink:#14141c;
+    --ink-soft:#1b1b26;
+    --hairline:#26262f;
+    --paper:#ECE8DE;
+    --paper-dim:#8c8b98;
+    --ember:#FF7A3D;
+    --jade:#4CAF6D;
+    --vermillion:#E5484D;
+    --gold:#E8B339;
+  }
+
+  html, body { margin:0; padding:0; background:var(--void); }
+  body{
+    position:relative;
+    font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  /* ambient grid — reads as both candlestick-chart grid and tatami floor lines */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,122,61,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,122,61,0.05) 1px, transparent 1px);
+    background-size: 26px 26px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 50% at 50% 0%, black 35%, transparent 85%);
+    mask-image: radial-gradient(ellipse 75% 50% at 50% 0%, black 35%, transparent 85%);
+  }
+  #root{ min-height:100vh; position:relative; z-index:1; }
+  *{ -webkit-user-select:none; user-select:none; box-sizing:border-box; }
+  input, textarea { -webkit-user-select:text; user-select:text; }
+  ::selection{ background:var(--ember); color:#0a0a0f; }
+  ::-webkit-scrollbar{ width:6px; height:6px; }
+  ::-webkit-scrollbar-thumb{ background:var(--hairline); border-radius:3px; }
+
+  button, input, textarea { font-family:inherit; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:2px solid var(--ember); outline-offset:2px;
+  }
+  button{ -webkit-appearance:none; }
+
+  .dojo-card{ transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease; }
+  .dojo-card:hover{ transform: translateY(-2px); }
+  .dojo-press{ transition: transform .1s ease, opacity .1s ease; }
+  .dojo-press:active{ transform: scale(0.97); opacity:0.9; }
+
+  @keyframes screenIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+  .screen-enter{ animation: screenIn .4s cubic-bezier(.16,1,.3,1) both; }
+
+  @keyframes stampIn{
+    0%{ opacity:0; transform: scale(2.4) rotate(-20deg); }
+    55%{ opacity:1; transform: scale(0.9) rotate(-6deg); }
+    100%{ opacity:1; transform: scale(1) rotate(-9deg); }
+  }
+  .dojo-seal{ animation: stampIn .45s cubic-bezier(.2,1.5,.4,1) both; }
+
+  @keyframes emberPulse{
+    0%,100%{ opacity:.55; } 50%{ opacity:1; }
+  }
+  .ember-pulse{ animation: emberPulse 2.4s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce){
+    .screen-enter, .dojo-seal, .ember-pulse, .dojo-card, .dojo-press{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root">
+  <div style="color:#8c8b98;font-family:'JetBrains Mono',monospace;text-align:center;padding-top:40vh;font-size:13px;letter-spacing:1px;">
+    開場準備中 — opening the dojo…
+  </div>
+</div>
+
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.0/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react" src="./dojo.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+  // Mount once dojo.jsx has registered its component on window
+  window.addEventListener("DOMContentLoaded", () => {
+    const tryMount = () => {
+      if (window.EATradingDojo) {
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(React.createElement(window.EATradingDojo));
+      } else {
+        setTimeout(tryMount, 50);
+      }
+    };
+    tryMount();
+  });
+</script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
